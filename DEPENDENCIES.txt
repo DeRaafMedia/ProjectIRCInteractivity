@@ -1,0 +1,9 @@
+This software is written with python version 2.7
+
+One library which isn't installed with Python by default is needed namely pySerial.
+
+First install python (Linux/Mac OSX have it already) -> https://www.python.org/download/
+
+Then install pySerial -> http://pyserial.sourceforge.net/pyserial.html
+
+-------------------------

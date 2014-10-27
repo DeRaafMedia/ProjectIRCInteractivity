@@ -1,0 +1,10 @@
+[Speak]
+speak_enabled = yes
+chat_speak_enabled = yes
+
+[Voices]
+default = Zarvox
+
+[Log Settings]
+chat = yes
+
