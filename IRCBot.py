@@ -323,14 +323,7 @@ class IRCBot(object):
 
                     self.speak('yes', 'no', execute[2], execute[3])
 
-                    if execute[7] != 'no':
-                        self.act('yes',
-                                 'no',
-                                 execute[5],
-                                 self.serial_port,
-                                 self.baud_rate,
-                                 self.time_out,
-                                 execute[6])
+
 
                     if execute[7] != 'no':
                         self.act('yes',
