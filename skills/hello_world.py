@@ -23,8 +23,8 @@ def hello_world(arg_1, arg_2, arg_3, arg_4):
                 device.write('1/1/11/0/')
             x = x + 1
             y = y - 1
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
             sleep(0.003)
         sleep(0.003)
         while x > 0:
@@ -36,8 +36,8 @@ def hello_world(arg_1, arg_2, arg_3, arg_4):
                 device.write('1/1/11/3/')
             x = x - 1
             y = y + 1
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
             sleep(0.003)
         sleep(0.003)
 

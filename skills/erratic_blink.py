@@ -10,12 +10,6 @@ def erratic_blink(arg_1, arg_2, arg_3, arg_4):
     time_out = int(arg_3)
     parameter = int(arg_4)
 
-    print(serial_port)
-    print(baud_rate)
-    print(time_out)
-    print(parameter)
-    print('-------------------------------------------------------')
-
     device = serial.Serial(serial_port, baud_rate, timeout=time_out)
 
     for i in range(0, parameter):

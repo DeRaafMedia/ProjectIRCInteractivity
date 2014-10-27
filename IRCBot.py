@@ -456,7 +456,12 @@ class IRCBot(object):
                                            'chat_speak_enabled',
                                            'yes')
 
+            #sentence = ''
+            #try:
+                # TODO Really!?! Find a better solutions. This is a bodge job. To specific!!!
             sentence = ((task.split(self.irc_channel)[1]).split(':')[1]).strip().replace("'", "\\'")
+            #except:
+                #pass
 
             if self.chat_speak_enabled == 'yes':
                 self.speech.speak(self.irc_bot_voice, sentence)
