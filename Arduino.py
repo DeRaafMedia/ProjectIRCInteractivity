@@ -6,30 +6,37 @@ from SerialPort import *
 class Arduino(SerialPort):
 
     def __init__(self,
-                 serial_port_id):
+                 serial_port_id,
+                 physical_device_id):
         """
         serial_port_id -> Give the serial port id as a variable name (i.e serial_port_2)
         Object can be addressed but serves as glue between SerialPort and Pin
+
         :param serial_port_id:
         :return:
         """
         super(Arduino, self).__init__(serial_port_id.serial_port,
                                       serial_port_id.baud_rate,
-                                      serial_port_id.time_out)
+                                      serial_port_id.time_out,
+                                      serial_port_id.serial_port_id)
         self.arduino_attr = SerialPort(self.serial_port,
                                        self.baud_rate,
-                                       self.time_out)
+                                       self.time_out,
+                                       self.serial_port_id)
+        self.physical_device_id = physical_device_id
 
     def __str__(self):
         return '\n\nSerial port: {0}\n' \
                'Baudrate : {1}\n' \
-               'Time Out : {2}' \
+               'Time Out : {2}\n' \
+               'Physical Device ID : {3}' \
                '\n\n'.format(self.serial_port,
                              self.baud_rate,
-                             self.time_out)
+                             self.time_out,
+                             self.physical_device_id)
 
     def __getattr__(self):
-        return 'Not Found'.format()
+        return '{0}'.format('Not Found')
 
     def soft_reset(self):
         """
@@ -37,7 +44,7 @@ class Arduino(SerialPort):
         """
         self.push_data('{0}/{1}/'.format(3, 3))
 
-
+# TODO scaffold code needs to be implemented!!
 class Pin(Arduino):
 
     def __init__(self,

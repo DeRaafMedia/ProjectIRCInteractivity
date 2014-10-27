@@ -9,11 +9,13 @@ class SerialPort(object):
     def __init__(self,
                  serial_port,
                  baud_rate,
-                 time_out):
+                 time_out,
+                 serial_port_id):
 
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         self.time_out = time_out
+        self.serial_port_id = serial_port_id
         self.serializer = serial.Serial(port=self.serial_port,
                                         baudrate=self.baud_rate,
                                         timeout=self.time_out,
@@ -23,9 +25,11 @@ class SerialPort(object):
         return '\n\nSerial port : {0}\n' \
                'Baud Rate : {1}\n' \
                'Time Out : {2}' \
+               'Serial Port Id : {3}' \
                '\n\n'.format(self.serial_port,
                              self.baud_rate,
-                             self.time_out)
+                             self.time_out,
+                             self.serial_port_id)
 
     def __getattr__(self):
         return 'Not found'.format()
@@ -39,6 +43,7 @@ class SerialPort(object):
     def open_serial_port(self):
         """
         Opens the Serial port
+
         :return:
         """
         # Method to open the serial port. Not needed in normal use cases. push_data/pull_data do this automatic
@@ -48,6 +53,7 @@ class SerialPort(object):
     def close_serial_port(self):
         """
         Closes the Serial port
+
         :return:
         """
         # Method to close the serial port. Not needed in normal use cases. push_data/pull_data do this automatic
@@ -59,6 +65,7 @@ class SerialPort(object):
         """
         serial_tx -> The data you want to send to the Arduino as a quoted string (i.e 'Test message')
         Most of the time msg is used from other functions
+
         :param serial_tx:
         :return:
         """
@@ -69,6 +76,7 @@ class SerialPort(object):
     def pull_data(self):
         """
         Pulls data from the Arduino.
+
         :return:
         """
         # Read serial data to receiver (Arduino)
@@ -78,6 +86,7 @@ class SerialPort(object):
     def serial_flush(self):
         """
         Flush serial buffers after file transfer
+
         :return:
         """
         return 'serial_flush'
@@ -86,6 +95,7 @@ class SerialPort(object):
     def serial_flush_in(self):
         """
         Flush the incoming (rx) serial port
+
         :return:
         """
         return 'serial_flush_in'
@@ -94,7 +104,7 @@ class SerialPort(object):
     def serial_flush_out(self):
         """
         Flush the outgoing (tx) serial port
+
         :return:
         """
         return 'serial_flush_out'
-        #self.serializer.flushOutput()
