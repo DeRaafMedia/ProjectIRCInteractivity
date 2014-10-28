@@ -51,33 +51,24 @@ class IRCBot(object):
                  serial_port_id):
         """
         irc_network -> Give address of IRC chat as quoted string (i.e 'irc.freenode.net')
-        irc_channel -> Give the name of the IRC channel as quoted string (i.e '#FooChannel')
         irc_port -> Give the port number which IRC is using (i.e 6667)
+        irc_channel -> Give the name of the IRC channel as quoted string (i.e '#FooChannel')
         irc_bot_nick -> Give a name to the IRC bot. This name needs to be same as you used for it's 'Brain'. But replace
-                        underscores (_) with spaces if you use them. i.e the Brain.cvs is called Robby_The_Robot.cvs
-                        the robot name has to be 'Robby the Robot'. Upper/lower cases are important!
+                        underscores (_) with spaces if you use them (beter not!). i.e the Brain.cvs is called
+                        Robby_The_Robot.cvs the robot name has to be 'Robby the Robot'. Upper/lower cases are important!
         irc_bot_owner -> The name that you use as a IRC handle. Feature is handy when you want to invent something where
                          two bots battle in the name of it's owners or something
 
         # TODO buy some other physical devices (MSP or something) to see how this code can be made more universal
-        physical_device -> Give a name to the physical device you connected (i.e arduino_1)
-        pins -> Give the list of pins you are gonna use on this device (fairly specific for the Arduino object)
-        serial_port -> The serial port you device is connected to (i.e /dev/tty.usb-yourdevice)
-        baud_rate -> The Baud rate the device is using
-        time_out -> Needed to handle time outs on the serial port. I wrote this software with a time out of 2. Never had
-                    a problem.
-
-        speak_enabled -> Very specific for Mac use. If the speak is enables than you can make functions and reactions
-                          where the computer used is talking with a physical voice.
-
-        spy -> Enable or Disable IRC chat log. The log files are stored in the logs/chat directory. Every chat session
-               gets it own file.
+        physical_device_id -> The id of the physical device you connected (i.e arduino_1)
+        serial_port_id -> The id of the serial device you created
 
         Set the IRC variables and create the IRC socket object
 
         Set the physical device variables
 
         :param irc_network:
+        :param irc_port:
         :param irc_channel:
         :param irc_bot_nick:
         :param irc_bot_owner:
@@ -372,7 +363,7 @@ class IRCBot(object):
         """
         voice -> A voice name used on Mac OSX system as a quoted string. Gets passed from Brain.csv (i.e 'Alex')
 
-        Executes the chat speak (the communication coming from others) if enabled as an parallel (threaded)
+        Executes the speak function (the communication coming from itself) if enabled as an parallel (threaded)
         object to main script
 
         :param voice:
