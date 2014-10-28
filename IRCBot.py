@@ -7,7 +7,7 @@ import time
 
 from Utilities import *
 
-
+# TODO needs to be put into Utilities.py where it belongs
 def load_imports(path_to_skills):
     """
     path_to_skills -> Path to the skills directory (i.e 'skills/')
