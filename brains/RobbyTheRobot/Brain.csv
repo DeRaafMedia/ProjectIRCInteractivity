@@ -1,8 +1,2 @@
 Trigger word,Directed trigger,Response text,Response voice,Sensor function,Sensor function parameters,Is dependent on Serial,Actuator function,Actuator function parameter,Is dependent on serial
-cheese_1,no,Where!!,Alex,no,0,no,no,0,no
-squirrel_1,no,"Squirrel, squirrel, squirrel, squirrel, squirrel!",Hysterical,no,0,no,erratic_blink,55,yes
-slap_1,yes,"This is the Trout Protection Agency, please put the Trout Down and walk away with your hands in the air",Bad News,no,0,no,no,0,no
-happy_1,no,"True happiness is ... to enjoy the present, without concerned dependence upon the future",Alex,no,0,no,no,0,no
-robbytherobot_1,no,"You talkin\' to me? You talkin' to me? You talkin\' to me? Then who the hell else are you talking... you talking to me? Well I\'m the only one here. Who the fuck do you think you\'re talking to? Oh yeah? OK.",Trinoids,no,0,no,angry_red_blink,70,yes
-goodbye_1,yes,"Fine, if you don't want me here I will gladly leave",Alex,no,0,no,leave_chat,0,no
-hello_1,no,"Hello World",Alex,no,0,no,hello_world,2,yes
+test,no,"Hello worls",Alex,no,0,no,test_function,3,yes
