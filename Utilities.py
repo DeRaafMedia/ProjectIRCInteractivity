@@ -23,13 +23,15 @@ class Utilities (object):
                '\n\n'.format()
 
     def __getattr__(self):
-        return 'Not Found'.format()
+        return '{0}'.format('Not Found')
 
     def initiate(self,
                  preference_file):
         """
         preference_file -> file to read/write from/to (i.e 'pref/preferences.txt')
+
         Creates a preference file (i.e. .initiate("pref/preferences.txt"))
+
         :param preference_file:
         :return:
         """
@@ -57,7 +59,9 @@ class Utilities (object):
         preference_file -> file to read/write from/to (i.e 'pref/preferences.txt')
         section -> Which section of preferences (i.e 'Speech')
         key -> Which key of preferences (i.e 'speech_enabled')
+
         Reads from preferences file (i.e. .read("pref/preferences.txt", "section", "key"))
+
         :param preference_file:
         :param session:
         :param key:
@@ -79,7 +83,9 @@ class Utilities (object):
         section -> Which section of preferences (i.e 'Speech')
         key -> Which key of preferences (i.e 'speech_enabled')
         value -> The value to be writen (i.e 'yes')
+
         Write to preferences file (i.e .write("pref/preferences.txt", "section", "key", "value"))
+
         :param preference_file:
         :param session:
         :param key:
@@ -100,6 +106,7 @@ class Utilities (object):
         as_daemon -> Yes if a function needs to be a Daemon process or not
         function -> The name of the function passed through from Brain.csv
         parameters -> The parameters the function needs
+
         :param as_daemon:
         :param function:
         :param parameters:
@@ -116,6 +123,7 @@ class Utilities (object):
 
     def speak(self, voice, sentence):
         """
+        voice -> Name of the Mac OS X voice to be used (i.e Alex)
 
         :param voice:
         :param sentence:
@@ -128,6 +136,8 @@ class Utilities (object):
 
     def check_conversation(self, sentence, irc_bot_name):
         """
+        sentence -> Takes 'raw' IRC communication and check it against the Brains.csv file
+        irc_bot_name -> Helps if you want multiple IRCBots Walking around
 
         :param sentence:
         :param irc_bot_name:
