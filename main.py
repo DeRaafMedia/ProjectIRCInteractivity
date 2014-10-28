@@ -115,7 +115,8 @@ def main(arg_1,  # serial_port
 
     exec initiate_ircbot
 
-    start_ircbot = (bot_name + '.listen("no", "no")')
+    start_ircbot = (bot_name
+                    + '.listen("no", "no")')
 
     exec start_ircbot
 
