@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="ProjectIRCInteractivity : ">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <title>ProjectIRCInteractivity</title>
+    <title>ProjectIRCInteractivity by DeRaafMedia</title>
   </head>
 
   <body>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/DeRaafMedia/ProjectIRCInteractivity">View on GitHub</a>
+    <header>
+      <div class="container">
+        <h1>ProjectIRCInteractivity</h1>
+        <h2></h2>
 
-          <h1 id="project_title">ProjectIRCInteractivity</h1>
-          <h2 id="project_tagline"></h2>
+        <section id="downloads">
+          <a href="https://github.com/DeRaafMedia/ProjectIRCInteractivity/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/DeRaafMedia/ProjectIRCInteractivity/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/DeRaafMedia/ProjectIRCInteractivity" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/DeRaafMedia/ProjectIRCInteractivity/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/DeRaafMedia/ProjectIRCInteractivity/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+    <div class="container">
+      <section id="main_content">
         <h3>
 <a name="projectircinteractivity" class="anchor" href="#projectircinteractivity"><span class="octicon octicon-link"></span></a>ProjectIRCInteractivity</h3>
 
@@ -46,7 +43,9 @@
 <a name="how-to-use" class="anchor" href="#how-to-use"><span class="octicon octicon-link"></span></a>How to use?</h3>
 
 <pre><code>$ cd project/project/directory/
-$ python main.py '/dev/your/serial/device/' '115200' '2' 'serial_port_1' 'physical_device_1' 'IRCBotName' 'YourIRCNick' 'irc.freenode.net' '6667' '#IRCChannel' 
+$ python main.py '/dev/your/serial/device/' '115200' '2' 
+'serial_port_1' 'physical_device_1' 'IRCBotName' 'YourIRCNick' 
+'irc.freenode.net' '6667' '#IRCChannel' 
 </code></pre>
 
 <p>Should be enough to create an IRCBot that 'listens' to the IRC channel for certain words that can be 'programmed' in via a simple .csv file (hopefully I'll get to edit the wiki pages A.S.A.P for a more detailed explanation). Those words can trigger an IRC event or a serial port event with Python scripts that are formatted a certain way (not really special, just With a little Zen in mind). Because of the use of Python events don't have to be restricted to IRC or Serial communications.    </p>
@@ -63,14 +62,6 @@ $ python main.py '/dev/your/serial/device/' '115200' '2' 'serial_port_1' 'physic
       </section>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">ProjectIRCInteractivity maintained by <a href="https://github.com/DeRaafMedia">DeRaafMedia</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -81,7 +72,6 @@ $ python main.py '/dev/your/serial/device/' '115200' '2' 'serial_port_1' 'physic
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
