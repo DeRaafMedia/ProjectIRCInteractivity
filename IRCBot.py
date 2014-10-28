@@ -165,7 +165,7 @@ class IRCBot(object):
         if self.spy == 'yes':
             if not os.path.exists(self.chat_directory):
                 os.makedirs(self.chat_directory, mode=0755)
-            self.chat_log_file_name = self.timestamp+'.txt'
+            self.chat_log_file_name = self.irc_bot_nick + '.' + self.timestamp+'.txt'
             log_file = open((self.chat_directory + self.chat_log_file_name), "a")
             log_file.write(self.irc_socket.recv(4096).strip()+'\n')
         else:
@@ -279,8 +279,9 @@ class IRCBot(object):
         """
         for task in self.think_tasks_array:
 
-            if task.find('toggleChatLog') != -1:
+            if task.find(self.irc_bot_nick + '.toggleChatLog') != -1:
                 if self.spy == 'yes':
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging disabled\r\n')
                     self.spy = 'no'
                     self.preferences.write(self.preference_file,
                                            'Log Settings',
@@ -288,6 +289,7 @@ class IRCBot(object):
                                            'no')
                 else:
                     self.spy = 'yes'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging enabled\r\n')
                     self.preferences.write(self.preference_file,
                                            'Log Settings',
                                            'chat',
@@ -371,8 +373,9 @@ class IRCBot(object):
         """
         for task in self.speak_tasks_array:
 
-            if task.find('toggleSpeak') != -1:
+            if task.find(self.irc_bot_nick + '.toggleVoice') != -1:
                 if self.speak_enabled == 'yes':
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Voice disabled\r\n')
                     self.speak_enabled = 'no'
                     self.preferences.write(self.preference_file,
                                            'Speak',
@@ -380,6 +383,7 @@ class IRCBot(object):
                                            'no')
                 else:
                     self.speak_enabled = 'yes'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Voice enabled\r\n')
                     self.preferences.write(self.preference_file,
                                            'Speak',
                                            'speak_enabled',
@@ -431,15 +435,17 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
-            if task.find('toggleChatSpeak') != -1:
+            if task.find(self.irc_bot_nick + '.toggleChatVoice') != -1:
                 if self.chat_speak_enabled == 'yes':
                     self.chat_speak_enabled = 'no'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat voice disabled\r\n')
                     self.preferences.write(self.preference_file,
                                            'Speak',
                                            'chat_speak_enabled',
                                            'no')
                 else:
                     self.chat_speak_enabled = 'yes'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat voice enabled\r\n')
                     self.preferences.write(self.preference_file,
                                            'Speak',
                                            'chat_speak_enabled',
