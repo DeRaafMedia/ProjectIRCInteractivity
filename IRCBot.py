@@ -323,8 +323,6 @@ class IRCBot(object):
 
                     self.speak('yes', 'no', execute[2], execute[3])
 
-
-
                     if execute[7] != 'no':
                         self.act('yes',
                                  'no',
