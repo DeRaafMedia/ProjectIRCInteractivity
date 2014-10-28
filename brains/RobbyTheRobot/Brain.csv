@@ -1,2 +1,2 @@
 Trigger word,Directed trigger,Response text,Response voice,Sensor function,Sensor function parameters,Is dependent on Serial,Actuator function,Actuator function parameter,Is dependent on serial
-test,no,"Hello worls",Alex,no,0,no,test_function,3,yes
+test,no,"Hello world",Alex,no,0,no,test_function,3,yes
