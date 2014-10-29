@@ -7,6 +7,7 @@ import time
 
 from Utilities import *
 
+
 # TODO needs to be put into Utilities.py where it belongs
 def load_imports(path_to_skills):
     """
@@ -160,8 +161,8 @@ class IRCBot(object):
                                                                 'Speak',
                                                                 'announcement_speak_enabled')
         self.irc_announcement_voice = self.preferences.read(self.preference_file,
-                                                           'Voices',
-                                                           'irc_announcement_voice')
+                                                            'Voices',
+                                                            'irc_announcement_voice')
 
     def irc_connect(self):
         """
@@ -294,6 +295,7 @@ class IRCBot(object):
 
         :return:
         """
+        # TODO This code repeats several times in the source, better solutions!?!?!?
         for task in self.think_tasks_array:
             if task[1].find(self.irc_bot_nick + '.toggleChatLog') != -1:
                 if self.spy == 'yes':
@@ -343,12 +345,12 @@ class IRCBot(object):
 
                     if execute[4] != 'no':
                         self.feel('yes',
-                                 'no',
-                                 execute[4],
-                                 self.serial_port,
-                                 self.baud_rate,
-                                 self.time_out,
-                                 execute[5])
+                                  'no',
+                                  execute[4],
+                                  self.serial_port,
+                                  self.baud_rate,
+                                  self.time_out,
+                                  execute[5])
 
             del self.think_tasks_array[0]
 
@@ -459,6 +461,8 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
+            # TODO code is repeating the same task. Maybe an other more efficient code is possible?!?!
+
             if task[1].find(self.irc_bot_nick + '.toggleChatVoice') != -1:
                 if self.chat_speak_enabled == 'yes':
                     self.chat_speak_enabled = 'no'
@@ -493,18 +497,17 @@ class IRCBot(object):
 
 
 
+            # TODO is al little sloppy and difficult to enhance (in my mind at this moment) Other solutions?
             if self.chat_speak_enabled == 'yes':
                 nick_speaker = task[0].split('!')
                 speakers_sentence = task[1]
                 if self.announcement_speak_enabled == 'yes':
                     self.speech.speak(self.irc_announcement_voice, str(nick_speaker[0]))
                     sleep(0.6)
-                # TODO make voice IRC user selectable
+                # TODO make voice IRC user selectable would be a nice feature!!
                 self.speech.speak(self.irc_bot_voice, speakers_sentence)
 
             del self.chat_speak_array[0]
-
-            return
 
     def act(self,
             as_thread,
