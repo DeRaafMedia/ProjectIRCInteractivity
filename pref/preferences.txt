@@ -1,9 +1,11 @@
 [Speak]
 speak_enabled = yes
 chat_speak_enabled = yes
+announcement_speak_enabled = no
 
 [Voices]
 default = Zarvox
+irc_announcement_voice = Whisper
 
 [Log Settings]
 chat = yes

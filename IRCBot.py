@@ -103,6 +103,8 @@ class IRCBot(object):
 
         self.speak_enabled = ''  # Initial value of speak enabled
         self.chat_speak_enabled = ''
+        self.irc_announcement_voice = ''
+        self.announcement_speak_enabled = ''
         self.start_thinking = False
 
         self.preference_file = 'pref/preferences.txt'
@@ -111,6 +113,7 @@ class IRCBot(object):
         self.thread = Utilities()
         self.speech = Utilities()
         self.incoming_conversation = Utilities()
+        self.irc_parser = Utilities()
 
     def __str__(self):
         return '\n\nIRC Network: {0}\n' \
@@ -153,6 +156,12 @@ class IRCBot(object):
         self.irc_bot_voice = self.preferences.read(self.preference_file,
                                                    'Voices',
                                                    'default')
+        self.announcement_speak_enabled = self.preferences.read(self.preference_file,
+                                                                'Speak',
+                                                                'announcement_speak_enabled')
+        self.irc_announcement_voice = self.preferences.read(self.preference_file,
+                                                           'Voices',
+                                                           'irc_announcement_voice')
 
     def irc_connect(self):
         """
@@ -237,7 +246,15 @@ class IRCBot(object):
             else:
                 if conversation:
                     sleep(0.2)
-                    self.think('no', 'no', conversation)
+                    cleaned_conversation = self.irc_parser.parse_irc_chat(conversation)
+                    # TODO Need some way's to do some fun stuff with this!
+                    print(cleaned_conversation[0])
+                    print(cleaned_conversation[1])
+                    print(' '.join(cleaned_conversation[2]))
+                    print(cleaned_conversation[3])
+                    self.think('no',
+                               'no',
+                               [cleaned_conversation[0], cleaned_conversation[3]])
 
     def think(self,
               as_thread,
@@ -278,8 +295,7 @@ class IRCBot(object):
         :return:
         """
         for task in self.think_tasks_array:
-
-            if task.find(self.irc_bot_nick + '.toggleChatLog') != -1:
+            if task[1].find(self.irc_bot_nick + '.toggleChatLog') != -1:
                 if self.spy == 'yes':
                     self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging disabled\r\n')
                     self.spy = 'no'
@@ -297,9 +313,9 @@ class IRCBot(object):
 
             if self.spy == 'yes':
                 log_file = open((self.chat_directory + self.chat_log_file_name), "a")  # chat log file
-                log_file.write(task)
+                log_file.write(str(task[0] + ' : ' + task[1]))
 
-            if task.find('End of /NAMES list') != -1:
+            if task[1].find('End of /NAMES list') != -1:
                 if not self.start_thinking:
                     self.start_thinking = True
 
@@ -307,7 +323,7 @@ class IRCBot(object):
 
                 self.chat_speak('no', 'no', task)
 
-                execute = self.incoming_conversation.check_conversation(task, self.irc_bot_nick)
+                execute = self.incoming_conversation.check_conversation(task[1], self.irc_bot_nick)
 
                 if execute:
 
@@ -324,8 +340,6 @@ class IRCBot(object):
                                  self.baud_rate,
                                  self.time_out,
                                  execute[8])
-
-                    # print('{0}').format(execute[9])
 
             del self.think_tasks_array[0]
 
@@ -373,7 +387,7 @@ class IRCBot(object):
         """
         for task in self.speak_tasks_array:
 
-            if task.find(self.irc_bot_nick + '.toggleVoice') != -1:
+            if task[1].find(self.irc_bot_nick + '.toggleVoice') != -1:
                 if self.speak_enabled == 'yes':
                     self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Voice disabled\r\n')
                     self.speak_enabled = 'no'
@@ -435,7 +449,7 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
-            if task.find(self.irc_bot_nick + '.toggleChatVoice') != -1:
+            if task[1].find(self.irc_bot_nick + '.toggleChatVoice') != -1:
                 if self.chat_speak_enabled == 'yes':
                     self.chat_speak_enabled = 'no'
                     self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat voice disabled\r\n')
@@ -451,15 +465,32 @@ class IRCBot(object):
                                            'chat_speak_enabled',
                                            'yes')
 
-            #sentence = ''
-            #try:
-                # TODO Really!?! Find a better solutions. This is a bodge job. To specific!!!
-            sentence = ((task.split(self.irc_channel)[1]).split(':')[1]).strip().replace("'", "\\'")
-            #except:
-                #pass
+            if task[1].find(self.irc_bot_nick + '.toggleAnnouncementVoice') != -1:
+                if self.announcement_speak_enabled == 'yes':
+                    self.announcement_speak_enabled = 'no'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Nick Announcement voice disabled\r\n')
+                    self.preferences.write(self.preference_file,
+                                           'Speak',
+                                           'announcement_speak_enabled',
+                                           'no')
+                else:
+                    self.announcement_speak_enabled = 'yes'
+                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Nick Announcement voice enabled\r\n')
+                    self.preferences.write(self.preference_file,
+                                           'Speak',
+                                           'announcement_speak_enabled',
+                                           'yes')
+
+
 
             if self.chat_speak_enabled == 'yes':
-                self.speech.speak(self.irc_bot_voice, sentence)
+                nick_speaker = task[0].split('!')
+                speakers_sentence = task[1]
+                if self.announcement_speak_enabled == 'yes':
+                    self.speech.speak(self.irc_announcement_voice, str(nick_speaker[0]))
+                    sleep(0.6)
+                # TODO make voice IRC user selectable
+                self.speech.speak(self.irc_bot_voice, speakers_sentence)
 
             del self.chat_speak_array[0]
 

@@ -44,8 +44,10 @@ class Utilities (object):
             self.parser.add_section('Speak')
             self.parser.set('Speak', 'speak_enabled', 'yes')
             self.parser.set('Speak', 'chat_speak_enabled', 'yes')
+            self.parser.set('Speak', 'announcement_speak_enabled', 'yes')
             self.parser.add_section('Voices')
             self.parser.set('Voices', 'default', 'Zarvox')
+            self.parser.set('Voices', 'irc_announcement_voice', 'Whisper')
             self.parser.add_section('Log Settings')
             self.parser.set('Log Settings', 'chat', 'yes')
             self.parser.write(open(preference_file, 'w'))
@@ -133,6 +135,23 @@ class Utilities (object):
                 system('say -v ' + voice + ' ' + sentence)
             else:
                 system('say ' + sentence)
+
+    def parse_irc_chat(self, sentence):
+        """
+        sentence -> Raw IRC strings
+        type_of_return -> 'all' give back a tuple with all eh IRC info. text_only gives back senteces
+        Takes in the raw string from the IRC chat and converts it to something more manageable
+        :param sentence:
+        :return:
+        """
+        irc_prefix = ''
+        irc_trailing = ''
+        if sentence.startswith(':'):
+            irc_prefix, sentence = sentence[1:].split(' ', 1)
+        if ' :' in sentence:
+            sentence, irc_trailing = sentence.split(' :', 1)
+        irc_arguments = sentence.split()
+        return irc_prefix, irc_arguments.pop(0), irc_arguments, irc_trailing
 
     def check_conversation(self, sentence, irc_bot_name):
         """
