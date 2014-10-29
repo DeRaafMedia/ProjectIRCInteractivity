@@ -1,7 +1,7 @@
 [Speak]
 speak_enabled = yes
 chat_speak_enabled = yes
-announcement_speak_enabled = no
+announcement_speak_enabled = yes
 
 [Voices]
 default = Zarvox

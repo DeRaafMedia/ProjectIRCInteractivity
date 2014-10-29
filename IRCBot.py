@@ -248,10 +248,10 @@ class IRCBot(object):
                     sleep(0.2)
                     cleaned_conversation = self.irc_parser.parse_irc_chat(conversation)
                     # TODO Need some way's to do some fun stuff with this!
-                    print(cleaned_conversation[0])
-                    print(cleaned_conversation[1])
-                    print(' '.join(cleaned_conversation[2]))
-                    print(cleaned_conversation[3])
+                    # print(cleaned_conversation[0])
+                    # print(cleaned_conversation[1])
+                    # print(' '.join(cleaned_conversation[2]))
+                    # print(cleaned_conversation[3])
                     self.think('no',
                                'no',
                                [cleaned_conversation[0], cleaned_conversation[3]])
@@ -404,6 +404,7 @@ class IRCBot(object):
                                            'yes')
 
             if self.speak_enabled == 'yes':
+                self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
                 self.speech.speak(voice, task)
             else:
                 self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
