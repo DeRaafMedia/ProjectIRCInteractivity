@@ -14,19 +14,19 @@ def test_function(arg_1, arg_2, arg_3, arg_4):
     x = 0
     for i in range(0, parameter):
         while x < 255:
-            device.write('1/1/11/' + str(x) + '/')
+            device.write('1/1/9/' + str(x) + '/')
             sleep(0.000005)
             x += 1
             sleep(0.000005)
         sleep(0.000005)
         while x > 0:
-            device.write('1/1/11/' + str(x) + '/')
+            device.write('1/1/9/' + str(x) + '/')
             sleep(0.000005)
             x -= 1
             sleep(0.000005)
         sleep(0.000005)
 
-    device.write('1/1/11/0/')
+    device.write('1/1/9/0/')
     device.close()
 
 

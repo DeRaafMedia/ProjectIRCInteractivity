@@ -341,6 +341,15 @@ class IRCBot(object):
                                  self.time_out,
                                  execute[8])
 
+                    if execute[4] != 'no':
+                        self.feel('yes',
+                                 'no',
+                                 execute[4],
+                                 self.serial_port,
+                                 self.baud_rate,
+                                 self.time_out,
+                                 execute[5])
+
             del self.think_tasks_array[0]
 
     def speak(self,
@@ -545,7 +554,7 @@ class IRCBot(object):
         """
         for task in self.act_tasks_array:
 
-            exucute = ''\
+            execute = ''\
                       + str(task[0]) + '.' + str(task[0])\
                       + '("' + str(task[1])\
                       + '", ' + str(task[2])\
@@ -553,17 +562,17 @@ class IRCBot(object):
                       + ', ' + str(task[4])\
                       + ')'
 
-            exec exucute
+            exec execute
 
             del self.act_tasks_array[0]
 
     def feel(self,
              as_thread,
              as_daemon,
+             action,
              serial_port,
              baud_rate,
              time_out,
-             action,
              action_parameter):
         """
         as_thread -> 'yes' if this method needs to be executed as a thread, 'no' if it doesn't
@@ -604,8 +613,9 @@ class IRCBot(object):
         :return:
         """
         for task in self.feel_tasks_array:
+            print(task)
 
-            exucute = ''\
+            execute = ''\
                       + str(task[0]) + '.' + str(task[0])\
                       + '("' + str(task[1])\
                       + '", ' + str(task[2])\
@@ -613,6 +623,6 @@ class IRCBot(object):
                       + ', ' + str(task[4])\
                       + ')'
 
-            exec exucute
+            exec execute
 
             del self.feel_tasks_array[0]
