@@ -297,6 +297,8 @@ class IRCBot(object):
         """
         # TODO This code repeats several times in the source, better solutions!?!?!?
         for task in self.think_tasks_array:
+
+            # TODO implement code in Utilities
             if task[1].find(self.irc_bot_nick + '.toggleChatLog') != -1:
                 if self.spy == 'yes':
                     self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging disabled\r\n')
@@ -396,6 +398,7 @@ class IRCBot(object):
         :param voice:
         :return:
         """
+        # TODO Implement code in Utilities
         for task in self.speak_tasks_array:
 
             if task[1].find(self.irc_bot_nick + '.toggleVoice') != -1:
@@ -461,7 +464,7 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
-            # TODO code is repeating the same task. Maybe an other more efficient code is possible?!?!
+            # TODO Implement code in Utilities
 
             if task[1].find(self.irc_bot_nick + '.toggleChatVoice') != -1:
                 if self.chat_speak_enabled == 'yes':
@@ -617,6 +620,8 @@ class IRCBot(object):
         """
         for task in self.feel_tasks_array:
             print(task)
+
+            # TODO double code!
 
             execute = ''\
                       + str(task[0]) + '.' + str(task[0])\

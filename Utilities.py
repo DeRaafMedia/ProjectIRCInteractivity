@@ -172,3 +172,55 @@ class Utilities (object):
             for thought in deep_thoughts:
                 if sentence.lower().find(thought[0]) != -1:
                     return thought
+
+    def set_toggle_state(self, sentence, irc_bot_nick, check):
+        """
+        sentence -> The sentence to check
+        irc_the_nick -> For which IRCBot is this test
+        check -> What to test takes in a number (i.e 1)
+
+        check [0] -> Chatlog test
+        check [1] -> IRCBot speech
+        check [2] -> Chat room speech
+        check [3] -> Nick announecement
+
+        :param sentence:
+        :param irc_bot_nick:
+        :param check:
+        """
+        checks_array = [['.toggleChatLog',
+                         self.spy,
+                         ' : Chat logging ',
+                         'Log Settings',
+                         'chat'],
+                       ['.toggleVoice',
+                        self.speak_enabled,
+                        ' : Voice ',
+                        'Speak',
+                        'speak_enbaled'],
+                       ['.toggleChatVoice',
+                        self.chat_speak_enabled,
+                        ' : Chat ',
+                        'Speak',
+                        'chat_speak_enabled'],
+                       ['.toggleChatVoice',
+                        self.annoucement_sepak_enabled,
+                        ' : Nick annoucement ',
+                        'Speak',
+                        'announcement_speak_enabled']]
+
+        if sentence.find(irc_bot_nick + checks_array[check][0]) != -1:
+            if checks_array[check][1] == 'yes':
+                checks_array[check][1] = 'no'
+                self.irc_socket_send('PRIVMSG ' + self.irc_channel + str(checks_array[check][2]) + 'disabled\r\n')
+                self.preferences.write(self.preference_file,
+                                       str(checks_array[check][3]),
+                                       str(checks_array[check][4]),
+                                       'no')
+            else:
+                checks_array[check][1] = 'yes'
+                self.irc_socket_send('PRIVMSG ' + self.irc_channel + str(checks_array[check][2]) + 'disabled\r\n')
+                self.preferences.write(self.preference_file,
+                                       str(checks_array[check][3]),
+                                       str(checks_array[check][4]),
+                                       'yes')
