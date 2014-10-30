@@ -2,7 +2,7 @@ import sys
 import serial
 from time import sleep
 
-def test_function(arg_1, arg_2, arg_3, arg_4):
+def test_act_function(arg_1, arg_2, arg_3, arg_4):
 
     serial_port = str(arg_1)
     baud_rate = int(arg_2)
@@ -30,5 +30,5 @@ def test_function(arg_1, arg_2, arg_3, arg_4):
     device.close()
 
 
-if __name__ == "test_function":
-    test_function(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+if __name__ == "test_act_function":
+    test_act_function(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

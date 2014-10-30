@@ -3,40 +3,11 @@ __author__ = 'DeRaaf'
 
 import socket
 from time import sleep
-import time
 
 from Utilities import *
 
-
-# TODO needs to be put into Utilities.py where it belongs
-def load_imports(path_to_skills):
-    """
-    path_to_skills -> Path to the skills directory (i.e 'skills/')
-
-    This function takes in al of the skill script files and puts them into the __init__.py file so the directory
-    (and all skills in it) can be imported for use.
-
-    :param path_to_skills:
-    """
-    files = os.listdir(path_to_skills)
-    skill_scripts = []
-
-    for i in range(len(files)):
-        name = files[i].split('.')
-        if len(name) > 1:
-            if name[1] == 'py' and name[0] != '__init__':
-                name = name[0]
-                skill_scripts.append(name)
-
-    init_file = open(path_to_skills+'__init__.py', 'w')
-
-    to_write = '__all__ = '+str(skill_scripts)
-
-    init_file.write(to_write)
-    init_file.close()
-
-load_imports('skills/')
-
+load_imports = Utilities()
+load_imports.load_skills_init('skills/')
 from skills import *
 
 
@@ -55,7 +26,7 @@ class IRCBot(object):
         irc_port -> Give the port number which IRC is using (i.e 6667)
         irc_channel -> Give the name of the IRC channel as quoted string (i.e '#FooChannel')
         irc_bot_nick -> Give a name to the IRC bot. This name needs to be same as you used for it's 'Brain'. But replace
-                        underscores (_) with spaces if you use them (beter not!). i.e the Brain.cvs is called
+                        underscores (_) with spaces if you use them (better not!). i.e the Brain.cvs is called
                         Robby_The_Robot.cvs the robot name has to be 'Robby the Robot'. Upper/lower cases are important!
         irc_bot_owner -> The name that you use as a IRC handle. Feature is handy when you want to invent something where
                          two bots battle in the name of it's owners or something
@@ -76,6 +47,8 @@ class IRCBot(object):
         :param physical_device_id:
         :param serial_port_id:
         """
+        self.utility = Utilities()
+
         self.think_tasks_array = []
         self.speak_tasks_array = []
         self.chat_speak_array = []
@@ -88,33 +61,18 @@ class IRCBot(object):
         self.irc_channel = irc_channel
         self.irc_bot_nick = irc_bot_nick
         self.irc_bot_owner = irc_bot_owner
-        self.irc_bot_voice = ''
+
+        self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.physical_device = physical_device_id
+
         self.serial_port = serial_port_id.serial_port
         self.baud_rate = serial_port_id.baud_rate
         self.time_out = serial_port_id.time_out
-        self.spy = ''
 
-        self.chat_directory = 'logs/chat/'
-        self.timestamp = time.strftime('%m%d%Y%H%M')
-        self.chat_log_file_name = ''  # Initial value for the chat log file name
-        self.irc_socket = socket.socket(socket.AF_INET,
-                                        socket.SOCK_STREAM)  # Initiate socket
-
-        self.speak_enabled = ''  # Initial value of speak enabled
-        self.chat_speak_enabled = ''
-        self.irc_announcement_voice = ''
-        self.announcement_speak_enabled = ''
         self.start_thinking = False
 
-        self.preference_file = 'pref/preferences.txt'
-        self.preferences = Utilities()
-
-        self.thread = Utilities()
-        self.speech = Utilities()
-        self.incoming_conversation = Utilities()
-        self.irc_parser = Utilities()
+        # self.utility.initiate_preference()
 
     def __str__(self):
         return '\n\nIRC Network: {0}\n' \
@@ -141,45 +99,16 @@ class IRCBot(object):
     def __getattr__(self):
         return '{0}'.format('Not Found')
 
-    def load_preferences(self):
-        self.preferences.initiate(self.preference_file)
-
-    def handle_preferences(self):
-        self.spy = self.preferences.read(self.preference_file,
-                                         'Log Settings',
-                                         'chat')
-        self.speak_enabled = self.preferences.read(self.preference_file,
-                                                   'Speak',
-                                                   'speak_enabled')
-        self.chat_speak_enabled = self.preferences.read(self.preference_file,
-                                                        'Speak',
-                                                        'chat_speak_enabled')
-        self.irc_bot_voice = self.preferences.read(self.preference_file,
-                                                   'Voices',
-                                                   'default')
-        self.announcement_speak_enabled = self.preferences.read(self.preference_file,
-                                                                'Speak',
-                                                                'announcement_speak_enabled')
-        self.irc_announcement_voice = self.preferences.read(self.preference_file,
-                                                            'Voices',
-                                                            'irc_announcement_voice')
-
     def irc_connect(self):
         """
         Connect to give IRC channel
 
         :rtype : object
         """
-        self.irc_socket.connect((self.irc_network,
-                                 self.irc_port))
-        if self.spy == 'yes':
-            if not os.path.exists(self.chat_directory):
-                os.makedirs(self.chat_directory, mode=0755)
-            self.chat_log_file_name = self.irc_bot_nick + '.' + self.timestamp+'.txt'
-            log_file = open((self.chat_directory + self.chat_log_file_name), "a")
-            log_file.write(self.irc_socket.recv(4096).strip()+'\n')
-        else:
-            pass
+        self.irc_socket.connect((self.irc_network, self.irc_port))
+        if self.utility.get_preference_value('chat_log_enabled'):
+            self.utility.create_chat_log(self.irc_bot_nick)
+            self.utility.write_chat_log(self.irc_socket.recv(4096).strip()+'\n')
 
     def get_born(self):
         """
@@ -221,13 +150,9 @@ class IRCBot(object):
         """
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.listen_function,
-                                       'none')
+                self.utility.new_thread('yes', self.listen_function, 'none')
             else:
-                self.thread.new_thread('no',
-                                       self.listen_function,
-                                       'none')
+                self.utility.new_thread('no', self.listen_function, 'none')
         else:
             self.listen_function()
 
@@ -237,8 +162,6 @@ class IRCBot(object):
 
         :return:
         """
-        self.load_preferences()
-        self.handle_preferences()
         self.get_born()
         while True:
             conversation = self.irc_socket.recv(4096)
@@ -247,15 +170,15 @@ class IRCBot(object):
             else:
                 if conversation:
                     sleep(0.2)
-                    cleaned_conversation = self.irc_parser.parse_irc_chat(conversation)
+                    cleaned_conversation = self.utility.parse_irc_chat(conversation)
+
                     # TODO Need some way's to do some fun stuff with this!
                     # print(cleaned_conversation[0])
                     # print(cleaned_conversation[1])
                     # print(' '.join(cleaned_conversation[2]))
                     # print(cleaned_conversation[3])
-                    self.think('no',
-                               'no',
-                               [cleaned_conversation[0], cleaned_conversation[3]])
+
+                    self.think('no', 'no', [cleaned_conversation[0], cleaned_conversation[3]])
 
     def think(self,
               as_thread,
@@ -272,17 +195,14 @@ class IRCBot(object):
         :param as_daemon:
         :return:
         """
+        # Put the received conversation into the thinking task array
         self.think_tasks_array.append(conversation)
 
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.think_function,
-                                       'none')
+                self.utility.new_thread('yes', self.think_function, 'none')
             else:
-                self.thread.new_thread('no',
-                                       self.think_function,
-                                       'none')
+                self.utility.new_thread('no', self.think_function, 'none')
         else:
             self.think_function()
 
@@ -295,65 +215,51 @@ class IRCBot(object):
 
         :return:
         """
-        # TODO This code repeats several times in the source, better solutions!?!?!?
+        # Loop through the thinking task array
         for task in self.think_tasks_array:
 
-            # TODO implement code in Utilities
-            if task[1].find(self.irc_bot_nick + '.toggleChatLog') != -1:
-                if self.spy == 'yes':
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging disabled\r\n')
-                    self.spy = 'no'
-                    self.preferences.write(self.preference_file,
-                                           'Log Settings',
-                                           'chat',
-                                           'no')
-                else:
-                    self.spy = 'yes'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat logging enabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Log Settings',
-                                           'chat',
-                                           'yes')
+            # Send the sentence received to a utility that check for the keyword to toggle chat on/off
+            if self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 0):
+                self.irc_socket.send('PRIVMSG '
+                                     + self.irc_channel
+                                     + ' : Log chat : '
+                                     + self.utility.get_preference_value('chat_log_enabled')
+                                     + '\r\n')
 
-            if self.spy == 'yes':
-                log_file = open((self.chat_directory + self.chat_log_file_name), "a")  # chat log file
-                log_file.write(str(task[0] + ' : ' + task[1]))
+            # If chat logging is enabled write the sentence to the file
+            if self.utility.get_preference_value('chat_log_enabled') == 'yes':
+                self.utility.write_chat_log(task)
 
+            # Only start 'thinking' if al the header information from the IRC is received (otherwise headache!)
             if task[1].find('End of /NAMES list') != -1:
                 if not self.start_thinking:
                     self.start_thinking = True
 
+            # Start the 'thinking' function
             if self.start_thinking:
 
                 self.chat_speak('no', 'no', task)
 
-                execute = self.incoming_conversation.check_conversation(task[1], self.irc_bot_nick)
+                # Little bit of a hackish solution to deal with empty strings coming from the IRC. It works for now
+                execute = self.utility.check_conversation(task[1], self.irc_bot_nick)
 
                 if execute:
 
+                    # TODO Scaffolding code for what to do with directed messages
                     if execute[1] == 'yes':
                         pass
 
                     self.speak('yes', 'no', execute[2], execute[3])
 
+                    # If a message is received that calls for an serial action
                     if execute[7] != 'no':
-                        self.act('yes',
-                                 'no',
-                                 execute[7],
-                                 self.serial_port,
-                                 self.baud_rate,
-                                 self.time_out,
-                                 execute[8])
+                        self.act('yes', 'no', execute[7], self.serial_port, self.baud_rate, self.time_out, execute[8])
 
+                    # If a message is received that calls for to listen to a serial function
                     if execute[4] != 'no':
-                        self.feel('yes',
-                                  'no',
-                                  execute[4],
-                                  self.serial_port,
-                                  self.baud_rate,
-                                  self.time_out,
-                                  execute[5])
+                        self.feel('yes', 'no', execute[4], self.serial_port, self.baud_rate, self.time_out, execute[5])
 
+            # Clear this thinking task from the array
             del self.think_tasks_array[0]
 
     def speak(self,
@@ -373,17 +279,14 @@ class IRCBot(object):
         :param voice:
         :return:
         """
+        # Put the conversation received into the speak_task_array
         self.speak_tasks_array.append(conversation)
 
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.speak_function,
-                                       voice)
+                self.utility.new_thread('yes', self.speak_function, voice)
             else:
-                self.thread.new_thread('no',
-                                       self.speak_function,
-                                       voice)
+                self.utility.new_thread('no', self.speak_function, voice)
         else:
             self.speak_function(voice)
 
@@ -401,28 +304,15 @@ class IRCBot(object):
         # TODO Implement code in Utilities
         for task in self.speak_tasks_array:
 
-            if task[1].find(self.irc_bot_nick + '.toggleVoice') != -1:
-                if self.speak_enabled == 'yes':
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Voice disabled\r\n')
-                    self.speak_enabled = 'no'
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'speak_enabled',
-                                           'no')
-                else:
-                    self.speak_enabled = 'yes'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Voice enabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'speak_enabled',
-                                           'yes')
+            self.utility.set_toggle_state(task, self.irc_bot_nick, 1)
 
-            if self.speak_enabled == 'yes':
+            if self.utility.get_preference_value('voice_enabled') == 'yes':
                 self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
-                self.speech.speak(voice, task)
+                self.utility.speak(voice, task)
             else:
                 self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
 
+            # Remove task from the speak task array
             del self.speak_tasks_array[0]
 
             return
@@ -443,15 +333,14 @@ class IRCBot(object):
         :param conversation:
         :return:
         """
+        # Put chat speak task in the speak chat array
         self.chat_speak_array.append(conversation)
 
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.chat_speak_function)
+                self.thread.new_thread('yes', self.chat_speak_function)
             else:
-                self.thread.new_thread('no',
-                                       self.chat_speak_function)
+                self.thread.new_thread('no', self.chat_speak_function)
         else:
             self.chat_speak_function()
 
@@ -464,52 +353,19 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
-            # TODO Implement code in Utilities
+            self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 2)
+            self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 3)
 
-            if task[1].find(self.irc_bot_nick + '.toggleChatVoice') != -1:
-                if self.chat_speak_enabled == 'yes':
-                    self.chat_speak_enabled = 'no'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat voice disabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'chat_speak_enabled',
-                                           'no')
-                else:
-                    self.chat_speak_enabled = 'yes'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Chat voice enabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'chat_speak_enabled',
-                                           'yes')
-
-            if task[1].find(self.irc_bot_nick + '.toggleAnnouncementVoice') != -1:
-                if self.announcement_speak_enabled == 'yes':
-                    self.announcement_speak_enabled = 'no'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Nick Announcement voice disabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'announcement_speak_enabled',
-                                           'no')
-                else:
-                    self.announcement_speak_enabled = 'yes'
-                    self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : Nick Announcement voice enabled\r\n')
-                    self.preferences.write(self.preference_file,
-                                           'Speak',
-                                           'announcement_speak_enabled',
-                                           'yes')
-
-
-
-            # TODO is al little sloppy and difficult to enhance (in my mind at this moment) Other solutions?
-            if self.chat_speak_enabled == 'yes':
+            if self.utility.chat_voice_enabled == 'yes':
                 nick_speaker = task[0].split('!')
                 speakers_sentence = task[1]
-                if self.announcement_speak_enabled == 'yes':
-                    self.speech.speak(self.irc_announcement_voice, str(nick_speaker[0]))
+                if self.utility.get_preference_value('announcement_voice_enabled') == 'yes':
+                    self.utility.speak(self.utility.get_preference_value('announcement_voice'), str(nick_speaker[0]))
                     sleep(0.6)
                 # TODO make voice IRC user selectable would be a nice feature!!
-                self.speech.speak(self.irc_bot_voice, speakers_sentence)
+                self.utility.speak(self.utility.get_preference_value('voice'), speakers_sentence)
 
+            # Remove task form array
             del self.chat_speak_array[0]
 
     def act(self,
@@ -540,15 +396,14 @@ class IRCBot(object):
         :param action_parameter:
         :return:
         """
+        # Put task inside act tasks array
         self.act_tasks_array.append([action, serial_port, baud_rate, time_out, action_parameter])
 
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.act_function)
+                self.utility.new_thread('yes', self.act_function)
             else:
-                self.thread.new_thread('no',
-                                       self.act_function)
+                self.utility.new_thread('no', self.act_function)
         else:
             self.act_function()
 
@@ -570,6 +425,7 @@ class IRCBot(object):
 
             exec execute
 
+            # Remove the act task from the array
             del self.act_tasks_array[0]
 
     def feel(self,
@@ -604,11 +460,9 @@ class IRCBot(object):
 
         if as_thread == 'yes':
             if as_daemon == 'yes':
-                self.thread.new_thread('yes',
-                                       self.feel_function)
+                self.utility.new_thread('yes', self.feel_function)
             else:
-                self.thread.new_thread('no',
-                                       self.feel_function)
+                self.utility.new_thread('no', self.feel_function)
         else:
             self.feel_function()
 
