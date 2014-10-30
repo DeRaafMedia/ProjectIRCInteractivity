@@ -4,7 +4,7 @@ chat_voice_enabled = yes
 announcement_voice_enabled = yes
 
 [Voices]
-default = Zarvox
+voice = Zarvox
 chat_voice = Alex
 announcement_voice = Whisper
 

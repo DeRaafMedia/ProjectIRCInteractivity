@@ -26,7 +26,7 @@ class Utilities (object):
         self.chat_voice_enabled = self.read_preference('Speak', 'chat_voice_enabled')
         self.announcement_voice_enabled = self.read_preference('Speak', 'announcement_voice_enabled')
 
-        self.voice = self.read_preference('Voices', 'default')
+        self.voice = self.read_preference('Voices', 'voice')
         self.chat_voice = self.read_preference('Voices', 'chat_voice')
         self.announcement_voice = self.read_preference('Voices', 'announcement_voice')
 
@@ -52,9 +52,7 @@ class Utilities (object):
 
         :return:
         """
-        if os.path.exists(self.preference_file):
-            pass
-        else:
+        if not os.path.exists(self.preference_file):
             temp_file = open(self.preference_file, 'w+')
 
             self.preference_parser.add_section('Speak')
@@ -63,7 +61,7 @@ class Utilities (object):
             self.preference_parser.set('Speak', 'announcement_voice_enabled', 'yes')
 
             self.preference_parser.add_section('Voices')
-            self.preference_parser.set('Voices', 'default', 'Zarvox')
+            self.preference_parser.set('Voices', 'voice', 'Zarvox')
             self.preference_parser.set('Voices', 'chat_voice', 'Alex')
             self.preference_parser.set('Voices', 'announcement_voice', 'Whisper')
 
@@ -72,6 +70,8 @@ class Utilities (object):
             self.preference_parser.write(open(self.preference_file, 'w'))
 
             temp_file.close()
+        else:
+            pass
 
     def read_preference(self, session, key):
         """
@@ -91,7 +91,7 @@ class Utilities (object):
         temp_file.close()
         return temp_value
 
-    def write_preference(self, session, key, value):
+    def write_preference(self, section, key, value):
         """
         preference_file -> file to read/write from/to (i.e 'pref/preferences.txt')
         section -> Which section of preferences (i.e 'Speech')
@@ -107,7 +107,7 @@ class Utilities (object):
         """
         temp_file = open(self.preference_file, 'r')
         self.preference_parser.readfp(temp_file)
-        self.preference_parser.set(session, key, value)
+        self.preference_parser.set(section, key, value)
         self.preference_parser.write(open(self.preference_file, 'w'))
         temp_file.close()
 
@@ -135,11 +135,13 @@ class Utilities (object):
             return self.announcement_voice_enabled
 
         if preference == 'voice':
-            return  self.voice
+            return self.voice
         if preference == 'chat_voice':
             return self.chat_voice
         if preference == 'announcement_voice':
             return self.announcement_voice
+        if preference == 'chat_log_file':
+            return self.chat_log_file
 
     def create_chat_log(self, irc_bot_name):
         """
@@ -169,6 +171,7 @@ class Utilities (object):
         if self.chat_log_enabled == 'yes':
             log_file = open((self.chat_directory + self.chat_log_file), "a")  # chat log file
             log_file.write(str(sentence[0] + ' : ' + sentence[1]))
+            log_file.close()
         else:
             pass
 
@@ -260,23 +263,46 @@ class Utilities (object):
         check [0] -> Chat log
         check [1] -> IRCBot speech
         check [2] -> Chat room speech
-        check [3] -> Nick announecement
+        check [3] -> Nick announcement
 
         :param sentence:
         :param irc_bot_nick:
         :param check:
         """
-        checks_array = [['.toggleChatLog', self.chat_log_enabled, 'Log Settings', 'chat'],
-                        ['.toggleVoice', self.voice_enabled, 'Speak', 'speak_enabled'],
-                        ['.toggleChatVoice', self.chat_voice_enabled, 'Speak', 'chat_speak_enabled'],
-                        ['.toggleNickVoice', self.announcement_voice_enabled, 'Speak', 'announcement_speak_enabled']]
+        checks_array = [['.toggleChatLog',
+                         self.chat_log_enabled,
+                         'self.chat_log_enabled',
+                         'Log Settings',
+                         'chat'],
+
+                        ['.toggleVoice',
+                         self.voice_enabled,
+                         'self.voice_enabled',
+                         'Speak',
+                         'voice_enabled'],
+
+                        ['.toggleChatVoice',
+                         self.chat_voice_enabled,
+                         'self.chat_voice_enabled',
+                         'Speak',
+                         'chat_voice_enabled'],
+
+                        ['.toggleNickVoice',
+                         self.announcement_voice_enabled,
+                         'self.announcement_voice_enabled',
+                         'Speak',
+                         'announcement_voice_enabled']]
 
         if sentence.find(irc_bot_nick + checks_array[check][0]) != -1:
-            if self.get_preference_value(checks_array[check][1]) == 'yes':
-                self.write_preference(checks_array[check][2], checks_array[check][3], 'no')
+            if checks_array[check][1] == 'yes':
+                execute = checks_array[check][2] + ' = "no"'
+                exec execute
+                self.write_preference(checks_array[check][3], checks_array[check][4], 'no')
                 return True
-            if self.get_preference_value(checks_array[check][1]) == 'no':
-                self.write_preference(checks_array[check][2], checks_array[check][3], 'yes')
+            else:
+                execute = checks_array[check][2] + ' = "yes"'
+                exec execute
+                self.write_preference(checks_array[check][3], checks_array[check][4], 'yes')
                 return True
         else:
             return False

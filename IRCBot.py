@@ -109,6 +109,8 @@ class IRCBot(object):
         if self.utility.get_preference_value('chat_log_enabled'):
             self.utility.create_chat_log(self.irc_bot_nick)
             self.utility.write_chat_log(self.irc_socket.recv(4096).strip()+'\n')
+        else:
+            pass
 
     def get_born(self):
         """
@@ -226,9 +228,35 @@ class IRCBot(object):
                                      + self.utility.get_preference_value('chat_log_enabled')
                                      + '\r\n')
 
+            # Send the sentence received to a utility that check for the keyword to toggle voice on/off
+            if self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 1):
+                self.irc_socket.send('PRIVMSG '
+                                     + self.irc_channel
+                                     + ' : Voice  : '
+                                     + self.utility.get_preference_value('voice_enabled')
+                                     + '\r\n')
+
+            # Send the sentence received to a utility that check for the keyword to toggle chat on/off
+            if self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 2):
+                self.irc_socket.send('PRIVMSG '
+                                     + self.irc_channel
+                                     + ' : Chat voice  : '
+                                     + self.utility.get_preference_value('chat_voice_enabled')
+                                     + '\r\n')
+
+            # Send the sentence received to a utility that check for the keyword to toggle chat on/off
+            if self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 3):
+                self.irc_socket.send('PRIVMSG '
+                                     + self.irc_channel
+                                     + ' : Nick voice : '
+                                     + self.utility.get_preference_value('announcement_voice_enabled')
+                                     + '\r\n')
+
             # If chat logging is enabled write the sentence to the file
             if self.utility.get_preference_value('chat_log_enabled') == 'yes':
                 self.utility.write_chat_log(task)
+            else:
+                pass
 
             # Only start 'thinking' if al the header information from the IRC is received (otherwise headache!)
             if task[1].find('End of /NAMES list') != -1:
@@ -304,13 +332,19 @@ class IRCBot(object):
         # TODO Implement code in Utilities
         for task in self.speak_tasks_array:
 
-            self.utility.set_toggle_state(task, self.irc_bot_nick, 1)
-
             if self.utility.get_preference_value('voice_enabled') == 'yes':
                 self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
+                if self.utility.get_preference_value('chat_log_enabled') == 'yes':
+                    self.utility.write_chat_log(['RESPONSE -> ' + self.irc_bot_nick, str(task) + '\r\n'])
+                else:
+                    pass
                 self.utility.speak(voice, task)
             else:
                 self.irc_socket.send('PRIVMSG ' + self.irc_channel + ' : ' + str(task) + '\r\n')
+                if self.utility.get_preference_value('chat_log_enabled') == 'yes':
+                    self.utility.write_chat_log(['RESPONSE -> ' + self.irc_bot_nick, str(task) + '\r\n'])
+                else:
+                    pass
 
             # Remove task from the speak task array
             del self.speak_tasks_array[0]
@@ -353,15 +387,15 @@ class IRCBot(object):
         """
         for task in self.chat_speak_array:
 
-            self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 2)
-            self.utility.set_toggle_state(str(task[1]), self.irc_bot_nick, 3)
-
-            if self.utility.chat_voice_enabled == 'yes':
+            if self.utility.get_preference_value('announcement_voice_enabled') == 'yes':
                 nick_speaker = task[0].split('!')
+                self.utility.speak(self.utility.get_preference_value('announcement_voice'), str(nick_speaker[0]))
+                sleep(0.15)
+            else:
+                pass
+            if self.utility.chat_voice_enabled == 'yes':
                 speakers_sentence = task[1]
-                if self.utility.get_preference_value('announcement_voice_enabled') == 'yes':
-                    self.utility.speak(self.utility.get_preference_value('announcement_voice'), str(nick_speaker[0]))
-                    sleep(0.6)
+                sleep(0.6)
                 # TODO make voice IRC user selectable would be a nice feature!!
                 self.utility.speak(self.utility.get_preference_value('voice'), speakers_sentence)
 
@@ -473,7 +507,6 @@ class IRCBot(object):
         :return:
         """
         for task in self.feel_tasks_array:
-            print(task)
 
             # TODO double code!
 
