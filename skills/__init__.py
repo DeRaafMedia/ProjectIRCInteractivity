@@ -1,1 +1,1 @@
-__all__ = ['erratic_blink', 'hello_world', 'template', 'template_serial_device', 'test_act_function', 'test_feel_function']
+__all__ = ['bang_1', 'erratic_blink', 'hello_world', 'template', 'template_serial_device', 'test_act_function', 'test_feel_function']
